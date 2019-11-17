@@ -7,30 +7,41 @@ const Temp = styled.div`
   width: 200px;
   height: 100px;
   background: blue;
+  margin: 10px;
 `;
 
 const Formatter = styled.div`
   position: fixed;
-  right: ${props =>
-    props.pos === 'r' ? '20px' : props.pos === 'm' ? '0' : 'initial'};
-  left: ${props =>
-    props.pos === 'l' ? '20px' : props.pos === 'm' ? '0' : 'initial'};
-  ${props =>
-    props.pos === 'm' &&
-    css`
-      margin: auto auto;
-      width: fit-content;
-    `}
-	top: 20px;
-	/* opacity: ${props => (props.shouldBeVisible ? '1.0' : '0.0')}; */
-	/* transition: opacity 1s ease; */
-	z-index: 100;
-	& > * {
-		margin-bottom: 10px
-	}
-	& > *:last-child {
-		margin-bottom: 0;
-	}
+  z-index: 100;
+  ${props => {
+    if (props.pos.includes('r')) {
+      return css`
+        right: 0;
+      `;
+    } else if (props.pos.includes('l')) {
+      return css`
+        left: 0;
+      `;
+    } else {
+      return css`
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        width: fit-content;
+      `;
+    }
+  }};
+  ${props => {
+    if (props.pos.includes('b')) {
+      return css`
+        bottom: 0;
+      `;
+    } else {
+      return css`
+        top: 0;
+      `;
+    }
+  }};
 `;
 
 const rightToLeftAnimation = keyframes`
@@ -66,14 +77,37 @@ const topToBottomAnimation = keyframes`
   }
 `;
 
+const bottomToTopAnimation = keyframes`
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+`;
+
 const Animator = styled.div`
-  animation: ${props =>
-      props.pos === 'l'
-        ? leftToRightAnimation
-        : props.pos === 'r'
-        ? rightToLeftAnimation
-        : topToBottomAnimation}
-    0.3s ease;
+  ${props => {
+    if (props.pos.includes('l')) {
+      return css`
+        animation: ${leftToRightAnimation} 0.3s ease;
+      `;
+    } else if (props.pos.includes('r')) {
+      return css`
+        animation: ${rightToLeftAnimation} 0.3s ease;
+      `;
+    } else if (props.pos.includes('b')) {
+      return css`
+        animation: ${bottomToTopAnimation} 0.3s ease;
+      `;
+    } else {
+      return css`
+        animation: ${topToBottomAnimation} 0.3s ease;
+      `;
+    }
+  }};
 `;
 
 const Context = createContext();
@@ -81,13 +115,17 @@ const { Provider: P } = Context;
 
 export const Provider = withPropTypes(
   {
-    position: PropTypes.oneOf(['l', 'm', 'r']),
+    /* position where the notification component will appear */
+    position: PropTypes.oneOf(['rl', 'tm', 'tr', 'bl', 'bm', 'br']),
   },
   {
-    position: 'm',
+    position: 'bm',
   }
 )(({ children, position }) => {
   const [notifications, setNotifications] = useState([]);
+  const n = position.includes('b')
+    ? notifications.slice().reverse()
+    : notifications;
   return (
     <P
       value={{
@@ -96,7 +134,7 @@ export const Provider = withPropTypes(
     >
       {children}
       <Formatter pos={position}>
-        {notifications.map(({ id, component: Notification }) => {
+        {n.map(({ id, component: Notification, componentProps }) => {
           return (
             <Animator
               id={id}
@@ -109,7 +147,7 @@ export const Provider = withPropTypes(
                 )
               }
             >
-              <Notification />
+              <Notification {...componentProps} />
             </Animator>
           );
         })}
@@ -125,19 +163,20 @@ export default () => {
       prevNotifications.filter(({ id }) => notificationId !== id)
     );
   };
-  const addNotification = () => {
+  const addNotification = (duration = 3000, componentProps = {}) => {
     const notificationId = `timed-notification-${String(new Date().getTime())}`;
-    setTimeout(() => removeNotification(notificationId), 5000);
+    setTimeout(() => removeNotification(notificationId), duration);
     setNotifications(prevNotifications =>
       prevNotifications.concat([
         {
           id: notificationId,
           component: Temp,
+          componentProps,
         },
       ])
     );
   };
   return {
-    notify: addNotification,
+    notify: ({ duration, props }) => addNotification(duration, props),
   };
 };

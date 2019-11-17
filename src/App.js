@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Dropdown from './components/dropdown';
-import useNotification from './components/notification';
+import useNotification, { Provider } from './components/notification';
 
 const Button = styled.div`
   width: 100px;
@@ -33,4 +33,8 @@ function App() {
   );
 }
 
-export default App;
+export default () => (
+  <Provider>
+    <App />
+  </Provider>
+);
