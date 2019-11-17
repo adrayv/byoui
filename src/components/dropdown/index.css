@@ -1,0 +1,67 @@
+.adrayv-ui-dropdown-wrap {
+  width: fit-content;
+  height: fit-content;
+  position: relative;
+}
+
+.adrayv-ui-trigger-wrap {
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+}
+
+@keyframes bottom-to-top {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+@keyframes top-to-bottom {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+.adrayv-ui-top-to-bottom-animation {
+  animation: top-to-bottom 0.3s ease;
+}
+
+.adrayv-ui-bottom-to-top-animation {
+  animation: bottom-to-top 0.3s ease;
+}
+
+.adrayv-ui-flyout-bl {
+  top: calc(100% + 5px);
+  right: 0;
+}
+
+.adrayv-ui-flyout-br {
+  top: calc(100% + 5px);
+  left: 0;
+}
+
+.adrayv-ui-flyout-tr {
+  bottom: calc(100% + 5px);
+  left: 0;
+}
+
+.adrayv-ui-flyout-tl {
+  bottom: calc(100% + 5px);
+  right: 0;
+}
+
+.adrayv-ui-flyout {
+  width: fit-content;
+  height: fit-content;
+  position: absolute;
+}
