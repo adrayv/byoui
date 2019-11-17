@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Dropdown from './components/dropdown';
+import useNotification from './components/notification';
 
 const Button = styled.div`
   width: 100px;
@@ -22,10 +23,12 @@ const Page = styled.div`
 `;
 
 function App() {
+  const { notify } = useNotification();
   return (
     <Page>
       <h1>Examples</h1>
       <Dropdown trigger={<Button />} flyout={<Popover />} flyoutPos="br" />
+      <button onClick={notify}>NOTIFY</button>
     </Page>
   );
 }

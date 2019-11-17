@@ -40,7 +40,8 @@
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "styled-components": "^4.4.1"
+    "styled-components": "^4.4.1",
+    "with-prop-types": "^0.1.1"
   },
   "browserslist": {
     "production": [
