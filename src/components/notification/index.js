@@ -3,16 +3,9 @@ import PropTypes from 'prop-types';
 import withPropTypes from 'with-prop-types';
 import styled, { css, keyframes } from 'styled-components';
 
-const Temp = styled.div`
-  width: 200px;
-  height: 100px;
-  background: blue;
-  margin: 10px;
-`;
-
 const Formatter = styled.div`
   position: fixed;
-  z-index: 100;
+  z-index: ${props => props.zIndex};
   ${props => {
     if (props.pos.includes('r')) {
       return css`
@@ -117,15 +110,15 @@ export const Provider = withPropTypes(
   {
     /* position where the notification component will appear */
     position: PropTypes.oneOf(['rl', 'tm', 'tr', 'bl', 'bm', 'br']),
+    zIndex: PropTypes.number,
+    component: PropTypes.element.isRequired,
   },
   {
-    position: 'bm',
+    position: 'tr',
+    zIndex: 50,
   }
-)(({ children, position }) => {
+)(({ children, position, component: Notification, zIndex }) => {
   const [notifications, setNotifications] = useState([]);
-  const n = position.includes('b')
-    ? notifications.slice().reverse()
-    : notifications;
   return (
     <P
       value={{
@@ -133,8 +126,8 @@ export const Provider = withPropTypes(
       }}
     >
       {children}
-      <Formatter pos={position}>
-        {n.map(({ id, component: Notification, componentProps }) => {
+      <Formatter zIndex={zIndex} pos={position}>
+        {notifications.map(({ id, componentProps }) => {
           return (
             <Animator
               id={id}
@@ -164,13 +157,14 @@ export default () => {
     );
   };
   const addNotification = (duration = 3000, componentProps = {}) => {
-    const notificationId = `timed-notification-${String(new Date().getTime())}`;
+    const notificationId = `adrayv-ui-notification-${String(
+      new Date().getTime()
+    )}`;
     setTimeout(() => removeNotification(notificationId), duration);
     setNotifications(prevNotifications =>
       prevNotifications.concat([
         {
           id: notificationId,
-          component: Temp,
           componentProps,
         },
       ])
