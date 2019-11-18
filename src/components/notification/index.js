@@ -1,110 +1,46 @@
 import React, { useState, useContext, createContext } from 'react';
 import PropTypes from 'prop-types';
 import withPropTypes from 'with-prop-types';
-import styled, { css, keyframes } from 'styled-components';
-
-const Formatter = styled.div`
-  position: fixed;
-  z-index: ${props => props.zIndex};
-  ${props => {
-    if (props.pos.includes('r')) {
-      return css`
-        right: 0;
-      `;
-    } else if (props.pos.includes('l')) {
-      return css`
-        left: 0;
-      `;
-    } else {
-      return css`
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        width: fit-content;
-      `;
-    }
-  }};
-  ${props => {
-    if (props.pos.includes('b')) {
-      return css`
-        bottom: 0;
-      `;
-    } else {
-      return css`
-        top: 0;
-      `;
-    }
-  }};
-`;
-
-const rightToLeftAnimation = keyframes`
-  from {
-    transform: translateX(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0px);
-    opacity: 1;
-  }
-`;
-
-const leftToRightAnimation = keyframes`
-  from {
-    transform: translateX(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0px);
-    opacity: 1;
-  }
-`;
-
-const topToBottomAnimation = keyframes`
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0px);
-    opacity: 1;
-  }
-`;
-
-const bottomToTopAnimation = keyframes`
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0px);
-    opacity: 1;
-  }
-`;
-
-const Animator = styled.div`
-  ${props => {
-    if (props.pos.includes('l')) {
-      return css`
-        animation: ${leftToRightAnimation} 0.3s ease;
-      `;
-    } else if (props.pos.includes('r')) {
-      return css`
-        animation: ${rightToLeftAnimation} 0.3s ease;
-      `;
-    } else if (props.pos.includes('b')) {
-      return css`
-        animation: ${bottomToTopAnimation} 0.3s ease;
-      `;
-    } else {
-      return css`
-        animation: ${topToBottomAnimation} 0.3s ease;
-      `;
-    }
-  }};
-`;
+import './index.css';
 
 const Context = createContext();
 const { Provider: P } = Context;
+
+const Formatter = ({ zIndex, position, children }) => {
+  let classList = ['adrayv-ui-notify'];
+  if (position.includes('r')) {
+    classList.push('adrayv-ui-notify-align-right');
+  } else if (position.includes('l')) {
+    classList.push('adrayv-ui-notify-align-left');
+  } else {
+    classList.push('adrayv-ui-notify-align-center');
+  }
+
+  if (position.includes('b')) {
+    classList.push('adrayv-ui-notify-align-bottom');
+  } else {
+    classList.push('adrayv-ui-notify-align-top');
+  }
+  return (
+    <div className={classList.join(' ')} style={{ zIndex }}>
+      {children}
+    </div>
+  );
+};
+
+const Animator = ({ position, children }) => {
+  let classList = [];
+  if (position.includes('l')) {
+    classList.push('adrayv-ui-notify-animation-left-right');
+  } else if (position.includes('r')) {
+    classList.push('adrayv-ui-notify-animation-right-left');
+  } else if (position.includes('b')) {
+    classList.push('adrayv-ui-notify-animation-bottom-top');
+  } else {
+    classList.push('adrayv-ui-notify-animation-top-bottom');
+  }
+  return <div className={classList.join(' ')}>{children}</div>;
+};
 
 export const Provider = withPropTypes(
   {
@@ -126,12 +62,12 @@ export const Provider = withPropTypes(
       }}
     >
       {children}
-      <Formatter zIndex={zIndex} pos={position}>
+      <Formatter zIndex={zIndex} position={position}>
         {notifications.map(({ id, componentProps }) => {
           return (
             <Animator
               id={id}
-              pos={position}
+              position={position}
               onClick={() =>
                 setNotifications(prevNotifications =>
                   prevNotifications.filter(
